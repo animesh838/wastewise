@@ -1,0 +1,550 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Schedule Pickup - WasteWise{% endblock %}
+
+{% block extra_css %}
+<style>
+    .waste-category-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: 2px solid transparent;
+    }
+    
+    .waste-category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+    
+    .waste-category-card.selected {
+        border-color: #28a745;
+        background-color: #f8fff9;
+    }
+    
+    .time-slot {
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: 2px solid #e9ecef;
+    }
+    
+    .time-slot:hover {
+        border-color: #007bff;
+        background-color: #f8f9fa;
+    }
+    
+    .time-slot.selected {
+        border-color: #28a745;
+        background-color: #d4edda;
+        color: #155724;
+    }
+    
+    .time-slot.unavailable {
+        background-color: #f8d7da;
+        border-color: #dc3545;
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+    
+    .step-indicator {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 2rem;
+    }
+    
+    .step {
+        display: flex;
+        align-items: center;
+        margin: 0 1rem;
+    }
+    
+    .step-number {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #e9ecef;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 0.5rem;
+    }
+    
+    .step.active .step-number {
+        background-color: #28a745;
+        color: white;
+    }
+    
+    .step.completed .step-number {
+        background-color: #007bff;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4">
+            <i class="bi bi-calendar-plus text-success"></i> Schedule Waste Pickup
+        </h2>
+    </div>
+</div>
+
+<!-- Step Indicator -->
+<div class="step-indicator">
+    <div class="step active" id="step1">
+        <div class="step-number">1</div>
+        <span>Category</span>
+    </div>
+    <div class="step" id="step2">
+        <div class="step-number">2</div>
+        <span>Details</span>
+    </div>
+    <div class="step" id="step3">
+        <div class="step-number">3</div>
+        <span>Schedule</span>
+    </div>
+    <div class="step" id="step4">
+        <div class="step-number">4</div>
+        <span>Confirm</span>
+    </div>
+</div>
+
+<form id="scheduleForm" method="post">
+    {% csrf_token %}
+    
+    <!-- Step 1: Category Selection -->
+    <div class="step-content" id="step1Content">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi bi-collection text-primary"></i> Select Waste Category
+                </h5>
+                <p class="text-muted">Choose the type of waste you want to schedule for pickup</p>
+                
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="waste-category-card card h-100" data-category="organic">
+                            <div class="card-body text-center">
+                                <i class="bi bi-leaf text-success" style="font-size: 3rem;"></i>
+                                <h6 class="mt-3">Organic Waste</h6>
+                                <p class="small text-muted">Food scraps, garden waste, biodegradable materials</p>
+                                <div class="mt-3">
+                                    <span class="badge bg-success">10 pts/kg</span>
+                                    <span class="badge bg-info">Daily pickup</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div class="waste-category-card card h-100" data-category="plastic">
+                            <div class="card-body text-center">
+                                <i class="bi bi-cup-straw text-primary" style="font-size: 3rem;"></i>
+                                <h6 class="mt-3">Plastic Waste</h6>
+                                <p class="small text-muted">Bottles, containers, packaging materials</p>
+                                <div class="mt-3">
+                                    <span class="badge bg-success">15 pts/kg</span>
+                                    <span class="badge bg-warning">Weekly pickup</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div class="waste-category-card card h-100" data-category="paper">
+                            <div class="card-body text-center">
+                                <i class="bi bi-file-earmark text-warning" style="font-size: 3rem;"></i>
+                                <h6 class="mt-3">Paper Waste</h6>
+                                <p class="small text-muted">Newspapers, cardboard, office paper</p>
+                                <div class="mt-3">
+                                    <span class="badge bg-success">12 pts/kg</span>
+                                    <span class="badge bg-warning">Weekly pickup</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div class="waste-category-card card h-100" data-category="metal">
+                            <div class="card-body text-center">
+                                <i class="bi bi-gear text-secondary" style="font-size: 3rem;"></i>
+                                <h6 class="mt-3">Metal Waste</h6>
+                                <p class="small text-muted">Cans, aluminum, steel items</p>
+                                <div class="mt-3">
+                                    <span class="badge bg-success">20 pts/kg</span>
+                                    <span class="badge bg-secondary">On-demand</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div class="waste-category-card card h-100" data-category="glass">
+                            <div class="card-body text-center">
+                                <i class="bi bi-square text-info" style="font-size: 3rem;"></i>
+                                <h6 class="mt-3">Glass Waste</h6>
+                                <p class="small text-muted">Bottles, jars, window glass</p>
+                                <div class="mt-3">
+                                    <span class="badge bg-success">18 pts/kg</span>
+                                    <span class="badge bg-secondary">On-demand</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div class="waste-category-card card h-100" data-category="electronic">
+                            <div class="card-body text-center">
+                                <i class="bi bi-cpu text-danger" style="font-size: 3rem;"></i>
+                                <h6 class="mt-3">E-Waste</h6>
+                                <p class="small text-muted">Electronics, batteries, circuits</p>
+                                <div class="mt-3">
+                                    <span class="badge bg-success">25 pts/kg</span>
+                                    <span class="badge bg-danger">Special handling</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <input type="hidden" name="waste_category" id="selectedCategory" required>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Step 2: Details -->
+    <div class="step-content" id="step2Content" style="display: none;">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi bi-info-circle text-primary"></i> Pickup Details
+                </h5>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="estimatedWeight" class="form-label">Estimated Weight (kg)</label>
+                        <input type="number" class="form-control" id="estimatedWeight" name="estimated_weight" min="0.1" step="0.1" required>
+                        <div class="form-text">Estimate the total weight of waste for pickup</div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label for="priority" class="form-label">Priority</label>
+                        <select class="form-select" id="priority" name="priority">
+                            <option value="low">Low - Regular pickup</option>
+                            <option value="medium" selected>Medium - Preferred timing</option>
+                            <option value="high">High - Urgent pickup</option>
+                            <option value="urgent">Urgent - Same day if possible</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-12 mb-3">
+                        <label for="location" class="form-label">Pickup Location</label>
+                        <select class="form-select" id="location" name="location" required>
+                            <option value="">Select pickup location...</option>
+                            <option value="1">Downtown Collection Center - 123 Main St</option>
+                            <option value="2">North Side Hub - 456 Oak Ave</option>
+                            <option value="3">South End Station - 789 Pine Rd</option>
+                            <option value="4">West Side Depot - 321 Elm St</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-12 mb-3">
+                        <label for="specialInstructions" class="form-label">Special Instructions (Optional)</label>
+                        <textarea class="form-control" id="specialInstructions" name="special_instructions" rows="3" placeholder="Any special handling instructions, access codes, or notes for the pickup team..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Step 3: Schedule -->
+    <div class="step-content" id="step3Content" style="display: none;">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi bi-calendar-event text-primary"></i> Select Date & Time
+                </h5>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="scheduledDate" class="form-label">Pickup Date</label>
+                        <input type="date" class="form-control" id="scheduledDate" name="scheduled_date" required>
+                        <div class="form-text">Select a date at least 24 hours in advance</div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Available Time Slots</label>
+                        <div class="row" id="timeSlots">
+                            <div class="col-6 mb-2">
+                                <div class="time-slot p-3 rounded text-center" data-time="08:00">
+                                    <strong>8:00 AM</strong>
+                                    <br><small>Early morning</small>
+                                </div>
+                            </div>
+                            <div class="col-6 mb-2">
+                                <div class="time-slot p-3 rounded text-center" data-time="10:00">
+                                    <strong>10:00 AM</strong>
+                                    <br><small>Mid morning</small>
+                                </div>
+                            </div>
+                            <div class="col-6 mb-2">
+                                <div class="time-slot p-3 rounded text-center" data-time="14:00">
+                                    <strong>2:00 PM</strong>
+                                    <br><small>Afternoon</small>
+                                </div>
+                            </div>
+                            <div class="col-6 mb-2">
+                                <div class="time-slot p-3 rounded text-center" data-time="16:00">
+                                    <strong>4:00 PM</strong>
+                                    <br><small>Late afternoon</small>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" name="scheduled_time" id="selectedTime" required>
+                    </div>
+                </div>
+                
+                <!-- Pickup Summary -->
+                <div class="mt-4 p-3 bg-light rounded">
+                    <h6><i class="bi bi-info-circle text-info"></i> Pickup Summary</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Category:</strong> <span id="summaryCategory">-</span></p>
+                            <p class="mb-1"><strong>Weight:</strong> <span id="summaryWeight">-</span> kg</p>
+                            <p class="mb-1"><strong>Location:</strong> <span id="summaryLocation">-</span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Date:</strong> <span id="summaryDate">-</span></p>
+                            <p class="mb-1"><strong>Time:</strong> <span id="summaryTime">-</span></p>
+                            <p class="mb-1"><strong>Priority:</strong> <span id="summaryPriority">-</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Step 4: Confirmation -->
+    <div class="step-content" id="step4Content" style="display: none;">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi bi-check-circle text-success"></i> Confirm Your Pickup
+                </h5>
+                
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="bg-light p-4 rounded">
+                            <h6 class="text-success">Pickup Details</h6>
+                            <div class="row">
+                                <div class="col-6">
+                                    <p><strong>Category:</strong> <span id="finalCategory">-</span></p>
+                                    <p><strong>Weight:</strong> <span id="finalWeight">-</span> kg</p>
+                                    <p><strong>Priority:</strong> <span id="finalPriority">-</span></p>
+                                </div>
+                                <div class="col-6">
+                                    <p><strong>Date:</strong> <span id="finalDate">-</span></p>
+                                    <p><strong>Time:</strong> <span id="finalTime">-</span></p>
+                                    <p><strong>Location:</strong> <span id="finalLocation">-</span></p>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <strong>Special Instructions:</strong>
+                                <p class="text-muted" id="finalInstructions">None</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="bg-success text-white p-4 rounded text-center">
+                            <h6>Estimated Rewards</h6>
+                            <h3 id="estimatedPoints">0</h3>
+                            <p class="mb-0">Points</p>
+                            <small class="opacity-75">Based on weight and category</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info mt-4">
+                    <i class="bi bi-info-circle"></i>
+                    <strong>What happens next?</strong>
+                    <ul class="mb-0 mt-2">
+                        <li>You'll receive a confirmation email</li>
+                        <li>Our team will contact you 30 minutes before pickup</li>
+                        <li>Points will be awarded after successful collection</li>
+                        <li>You can track your pickup status in your dashboard</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Navigation Buttons -->
+    <div class="d-flex justify-content-between mt-4">
+        <button type="button" class="btn btn-secondary" id="prevBtn" onclick="changeStep(-1)" style="display: none;">
+            <i class="bi bi-arrow-left"></i> Previous
+        </button>
+        <div></div>
+        <button type="button" class="btn btn-success" id="nextBtn" onclick="changeStep(1)">
+            Next <i class="bi bi-arrow-right"></i>
+        </button>
+        <button type="submit" class="btn btn-success" id="submitBtn" style="display: none;">
+            <i class="bi bi-check-lg"></i> Schedule Pickup
+        </button>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let currentStep = 1;
+const totalSteps = 4;
+
+// Category selection
+document.querySelectorAll('.waste-category-card').forEach(card => {
+    card.addEventListener('click', function() {
+        document.querySelectorAll('.waste-category-card').forEach(c => c.classList.remove('selected'));
+        this.classList.add('selected');
+        document.getElementById('selectedCategory').value = this.dataset.category;
+        updateSummary();
+    });
+});
+
+// Time slot selection
+document.querySelectorAll('.time-slot').forEach(slot => {
+    slot.addEventListener('click', function() {
+        if (!this.classList.contains('unavailable')) {
+            document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+            this.classList.add('selected');
+            document.getElementById('selectedTime').value = this.dataset.time;
+            updateSummary();
+        }
+    });
+});
+
+// Form inputs
+document.getElementById('estimatedWeight').addEventListener('input', updateSummary);
+document.getElementById('priority').addEventListener('change', updateSummary);
+document.getElementById('location').addEventListener('change', updateSummary);
+document.getElementById('scheduledDate').addEventListener('change', updateSummary);
+document.getElementById('specialInstructions').addEventListener('input', updateSummary);
+
+function changeStep(direction) {
+    const newStep = currentStep + direction;
+    
+    if (newStep < 1 || newStep > totalSteps) return;
+    
+    // Validate current step before proceeding
+    if (direction === 1 && !validateStep(currentStep)) return;
+    
+    // Update step
+    currentStep = newStep;
+    updateStepDisplay();
+    updateSummary();
+}
+
+function validateStep(step) {
+    switch(step) {
+        case 1:
+            if (!document.getElementById('selectedCategory').value) {
+                alert('Please select a waste category');
+                return false;
+            }
+            break;
+        case 2:
+            if (!document.getElementById('estimatedWeight').value || 
+                !document.getElementById('location').value) {
+                alert('Please fill in all required details');
+                return false;
+            }
+            break;
+        case 3:
+            if (!document.getElementById('scheduledDate').value || 
+                !document.getElementById('selectedTime').value) {
+                alert('Please select date and time');
+                return false;
+            }
+            break;
+    }
+    return true;
+}
+
+function updateStepDisplay() {
+    // Hide all step contents
+    document.querySelectorAll('.step-content').forEach(content => {
+        content.style.display = 'none';
+    });
+    
+    // Show current step content
+    document.getElementById(`step${currentStep}Content`).style.display = 'block';
+    
+    // Update step indicators
+    document.querySelectorAll('.step').forEach((step, index) => {
+        step.classList.remove('active', 'completed');
+        if (index + 1 < currentStep) {
+            step.classList.add('completed');
+        } else if (index + 1 === currentStep) {
+            step.classList.add('active');
+        }
+    });
+    
+    // Update navigation buttons
+    document.getElementById('prevBtn').style.display = currentStep > 1 ? 'block' : 'none';
+    document.getElementById('nextBtn').style.display = currentStep < totalSteps ? 'block' : 'none';
+    document.getElementById('submitBtn').style.display = currentStep === totalSteps ? 'block' : 'none';
+}
+
+function updateSummary() {
+    const category = document.getElementById('selectedCategory').value;
+    const weight = document.getElementById('estimatedWeight').value;
+    const priority = document.getElementById('priority').value;
+    const location = document.getElementById('location').selectedOptions[0]?.text || '-';
+    const date = document.getElementById('scheduledDate').value;
+    const time = document.getElementById('selectedTime').value;
+    const instructions = document.getElementById('specialInstructions').value;
+    
+    // Update summary in step 3
+    document.getElementById('summaryCategory').textContent = category || '-';
+    document.getElementById('summaryWeight').textContent = weight || '-';
+    document.getElementById('summaryPriority').textContent = priority || '-';
+    document.getElementById('summaryLocation').textContent = location;
+    document.getElementById('summaryDate').textContent = date || '-';
+    document.getElementById('summaryTime').textContent = time || '-';
+    
+    // Update final confirmation
+    document.getElementById('finalCategory').textContent = category || '-';
+    document.getElementById('finalWeight').textContent = weight || '-';
+    document.getElementById('finalPriority').textContent = priority || '-';
+    document.getElementById('finalLocation').textContent = location;
+    document.getElementById('finalDate').textContent = date || '-';
+    document.getElementById('finalTime').textContent = time || '-';
+    document.getElementById('finalInstructions').textContent = instructions || 'None';
+    
+    // Calculate estimated points
+    const points = calculatePoints(category, weight);
+    document.getElementById('estimatedPoints').textContent = points;
+}
+
+function calculatePoints(category, weight) {
+    const pointsPerKg = {
+        'organic': 10,
+        'plastic': 15,
+        'paper': 12,
+        'metal': 20,
+        'glass': 18,
+        'electronic': 25
+    };
+    
+    const basePoints = (pointsPerKg[category] || 10) * (parseFloat(weight) || 0);
+    return Math.round(basePoints);
+}
+
+// Set minimum date to tomorrow
+document.addEventListener('DOMContentLoaded', function() {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    document.getElementById('scheduledDate').min = tomorrow.toISOString().split('T')[0];
+});
+</script>
+{% endblock %}

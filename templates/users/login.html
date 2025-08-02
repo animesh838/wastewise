@@ -1,0 +1,129 @@
+{% extends 'base/base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Login - WasteWise{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card-modern" data-tilt data-reveal="fade-up">
+                    <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <i class="bi bi-recycle text-success" style="font-size: 3rem;"></i>
+                    <h3 class="mt-3">Welcome Back</h3>
+                    <p class="text-muted">Sign in to your WasteWise account</p>
+                </div>
+
+                <form method="post" data-reveal="fade-up">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label fw-semibold">
+                            <i class="bi bi-envelope me-2 text-success"></i> Email Address
+                        </label>
+                        <input type="email" name="username" class="form-control form-control-lg" id="id_username" placeholder="Enter your email address" required style="border-radius: 15px; border: 2px solid #e9ecef; transition: all 0.3s ease;">
+                        {% if form.username.errors %}
+                            <div class="text-danger small mt-1">{{ form.username.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_password" class="form-label fw-semibold">
+                            <i class="bi bi-lock me-2 text-success"></i> Password
+                        </label>
+                        <input type="password" name="password" class="form-control form-control-lg" id="id_password" placeholder="Enter your password" required style="border-radius: 15px; border: 2px solid #e9ecef; transition: all 0.3s ease;">
+                        {% if form.password.errors %}
+                            <div class="text-danger small mt-1">{{ form.password.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="rememberMe" name="remember_me">
+                        <label class="form-check-label" for="rememberMe">
+                            Remember me
+                        </label>
+                    </div>
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+
+                    <button type="submit" class="btn btn-success btn-lg w-100 mb-3" style="border-radius: 15px; padding: 15px; font-weight: 600; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border: none; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(17, 153, 142, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                        <i class="bi bi-box-arrow-in-right me-2"></i> Sign In
+                    </button>
+                </form>
+
+                <div class="text-center">
+                    <p class="mb-2">
+                        <a href="#" class="text-decoration-none">Forgot your password?</a>
+                    </p>
+                    <p class="text-muted">
+                        Don't have an account? 
+                        <a href="{% url 'users:register' %}" class="text-success text-decoration-none fw-bold">Sign up here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features preview for non-authenticated users -->
+        <div class="row mt-4">
+            <div class="col-4 text-center">
+                <i class="bi bi-calendar-check text-success" style="font-size: 2rem;"></i>
+                <p class="small mt-2 text-muted">Smart Scheduling</p>
+            </div>
+            <div class="col-4 text-center">
+                <i class="bi bi-cpu text-primary" style="font-size: 2rem;"></i>
+                <p class="small mt-2 text-muted">IoT Monitoring</p>
+            </div>
+            <div class="col-4 text-center">
+                <i class="bi bi-trophy text-warning" style="font-size: 2rem;"></i>
+                <p class="small mt-2 text-muted">Earn Rewards</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add focus and blur effects for form inputs
+    const inputs = document.querySelectorAll('.form-control');
+    
+    inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.style.borderColor = '#11998e';
+            this.style.boxShadow = '0 0 0 0.25rem rgba(17, 153, 142, 0.15)';
+            this.style.transform = 'translateY(-2px)';
+            this.style.background = 'rgba(17, 153, 142, 0.02)';
+        });
+        
+        input.addEventListener('blur', function() {
+            this.style.borderColor = '#e9ecef';
+            this.style.boxShadow = 'none';
+            this.style.transform = 'translateY(0)';
+            this.style.background = 'white';
+        });
+        
+        input.addEventListener('input', function() {
+            // Add a subtle pulse effect when typing
+            this.style.animation = 'pulse 0.3s ease';
+            setTimeout(() => {
+                this.style.animation = '';
+            }, 300);
+        });
+    });
+    
+    // Show notification on page load
+    setTimeout(() => {
+        WasteWise.showModernNotification(
+            'Please use: demo@wastemanagement.com / demo123 for testing! 🔑',
+            'info',
+            6000
+        );
+    }, 1000);
+});
+</script>
+{% endblock %}

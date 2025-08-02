@@ -1,0 +1,342 @@
+{% extends 'base/base.html' %}
+
+{% block title %}My Schedules - WasteWise{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4">
+            <i class="bi bi-calendar-check text-success"></i> My Pickup Schedules
+        </h2>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <a href="{% url 'waste:schedule_pickup' %}" class="btn btn-success">
+                    <i class="bi bi-plus-lg"></i> Schedule New Pickup
+                </a>
+                <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
+                    <i class="bi bi-funnel"></i> Filter
+                </button>
+            </div>
+            <div>
+                <div class="btn-group" role="group">
+                    <input type="radio" class="btn-check" name="viewType" id="listView" autocomplete="off" checked>
+                    <label class="btn btn-outline-secondary" for="listView">
+                        <i class="bi bi-list-ul"></i> List
+                    </label>
+                    <input type="radio" class="btn-check" name="viewType" id="cardView" autocomplete="off">
+                    <label class="btn btn-outline-secondary" for="cardView">
+                        <i class="bi bi-grid"></i> Cards
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+                <h4>{{ schedules.count|default:0 }}</h4>
+                <p class="mb-0">Total Schedules</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body text-center">
+                <h4>{% for schedule in schedules %}{% if schedule.status == 'pending' %}{{ forloop.counter0|add:1 }}{% endif %}{% empty %}0{% endfor %}</h4>
+                <p class="mb-0">Pending</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-info text-white">
+            <div class="card-body text-center">
+                <h4>{% for schedule in schedules %}{% if schedule.status == 'in_progress' %}{{ forloop.counter0|add:1 }}{% endif %}{% empty %}0{% endfor %}</h4>
+                <p class="mb-0">In Progress</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <h4>{% for schedule in schedules %}{% if schedule.status == 'completed' %}{{ forloop.counter0|add:1 }}{% endif %}{% empty %}0{% endfor %}</h4>
+                <p class="mb-0">Completed</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- List View -->
+<div id="listViewContent">
+    <div class="card">
+        <div class="card-body">
+            {% if schedules %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Category</th>
+                                <th>Location</th>
+                                <th>Date & Time</th>
+                                <th>Weight</th>
+                                <th>Status</th>
+                                <th>Priority</th>
+                                <th>Points</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for schedule in schedules %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% if schedule.waste_category.name == 'organic' %}
+                                            <i class="bi bi-leaf text-success me-2"></i>
+                                        {% elif schedule.waste_category.name == 'plastic' %}
+                                            <i class="bi bi-cup-straw text-primary me-2"></i>
+                                        {% elif schedule.waste_category.name == 'paper' %}
+                                            <i class="bi bi-file-earmark text-warning me-2"></i>
+                                        {% elif schedule.waste_category.name == 'metal' %}
+                                            <i class="bi bi-gear text-secondary me-2"></i>
+                                        {% elif schedule.waste_category.name == 'glass' %}
+                                            <i class="bi bi-square text-info me-2"></i>
+                                        {% else %}
+                                            <i class="bi bi-cpu text-danger me-2"></i>
+                                        {% endif %}
+                                        {{ schedule.waste_category.get_name_display }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <div class="fw-bold">{{ schedule.location.name }}</div>
+                                        <small class="text-muted">{{ schedule.location.city }}</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <div class="fw-bold">{{ schedule.scheduled_date }}</div>
+                                        <small class="text-muted">{{ schedule.scheduled_time }}</small>
+                                    </div>
+                                </td>
+                                <td>{{ schedule.estimated_weight }} kg</td>
+                                <td>
+                                    <span class="badge status-{{ schedule.status }}">
+                                        {{ schedule.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge priority-{{ schedule.priority }}">
+                                        {{ schedule.get_priority_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if schedule.points_awarded %}
+                                        <span class="text-success fw-bold">{{ schedule.points_awarded }}</span>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{% url 'waste:pickup_detail' schedule.pk %}" class="btn btn-outline-primary" title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        {% if schedule.status == 'pending' %}
+                                            <a href="{% url 'waste:pickup_edit' schedule.pk %}" class="btn btn-outline-secondary" title="Edit">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a href="{% url 'waste:pickup_cancel' schedule.pk %}" class="btn btn-outline-danger" title="Cancel">
+                                                <i class="bi bi-x-lg"></i>
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-calendar-x text-muted" style="font-size: 4rem;"></i>
+                    <h4 class="mt-3 text-muted">No Pickup Schedules</h4>
+                    <p class="text-muted">You haven't scheduled any waste pickups yet.</p>
+                    <a href="{% url 'waste:schedule_pickup' %}" class="btn btn-success">
+                        <i class="bi bi-plus-lg"></i> Schedule Your First Pickup
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Card View -->
+<div id="cardViewContent" style="display: none;">
+    <div class="row">
+        {% for schedule in schedules %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            {% if schedule.waste_category.name == 'organic' %}
+                                <i class="bi bi-leaf text-success" style="font-size: 2rem;"></i>
+                            {% elif schedule.waste_category.name == 'plastic' %}
+                                <i class="bi bi-cup-straw text-primary" style="font-size: 2rem;"></i>
+                            {% elif schedule.waste_category.name == 'paper' %}
+                                <i class="bi bi-file-earmark text-warning" style="font-size: 2rem;"></i>
+                            {% elif schedule.waste_category.name == 'metal' %}
+                                <i class="bi bi-gear text-secondary" style="font-size: 2rem;"></i>
+                            {% elif schedule.waste_category.name == 'glass' %}
+                                <i class="bi bi-square text-info" style="font-size: 2rem;"></i>
+                            {% else %}
+                                <i class="bi bi-cpu text-danger" style="font-size: 2rem;"></i>
+                            {% endif %}
+                        </div>
+                        <span class="badge status-{{ schedule.status }}">{{ schedule.get_status_display }}</span>
+                    </div>
+                    
+                    <h6 class="card-title">{{ schedule.waste_category.get_name_display }}</h6>
+                    
+                    <div class="mb-3">
+                        <p class="mb-1"><i class="bi bi-geo-alt text-muted me-1"></i> {{ schedule.location.name }}</p>
+                        <p class="mb-1"><i class="bi bi-calendar text-muted me-1"></i> {{ schedule.scheduled_date }}</p>
+                        <p class="mb-1"><i class="bi bi-clock text-muted me-1"></i> {{ schedule.scheduled_time }}</p>
+                        <p class="mb-1"><i class="bi bi-weight text-muted me-1"></i> {{ schedule.estimated_weight }} kg</p>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="badge priority-{{ schedule.priority }}">{{ schedule.get_priority_display }}</span>
+                            {% if schedule.points_awarded %}
+                                <span class="badge bg-success">{{ schedule.points_awarded }} pts</span>
+                            {% endif %}
+                        </div>
+                        <div class="btn-group btn-group-sm">
+                            <a href="{% url 'waste:pickup_detail' schedule.pk %}" class="btn btn-outline-primary">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            {% if schedule.status == 'pending' %}
+                                <a href="{% url 'waste:pickup_edit' schedule.pk %}" class="btn btn-outline-secondary">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="bi bi-calendar-x text-muted" style="font-size: 4rem;"></i>
+                <h4 class="mt-3 text-muted">No Pickup Schedules</h4>
+                <p class="text-muted">You haven't scheduled any waste pickups yet.</p>
+                <a href="{% url 'waste:schedule_pickup' %}" class="btn btn-success">
+                    <i class="bi bi-plus-lg"></i> Schedule Your First Pickup
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Filter Modal -->
+<div class="modal fade" id="filterModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Filter Schedules</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="statusAll" checked>
+                                <label class="form-check-label" for="statusAll">All</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="statusPending">
+                                <label class="form-check-label" for="statusPending">Pending</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="statusConfirmed">
+                                <label class="form-check-label" for="statusConfirmed">Confirmed</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="statusInProgress">
+                                <label class="form-check-label" for="statusInProgress">In Progress</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="statusCompleted">
+                                <label class="form-check-label" for="statusCompleted">Completed</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        <select class="form-select">
+                            <option value="">All Categories</option>
+                            <option value="organic">Organic</option>
+                            <option value="plastic">Plastic</option>
+                            <option value="paper">Paper</option>
+                            <option value="metal">Metal</option>
+                            <option value="glass">Glass</option>
+                            <option value="electronic">E-Waste</option>
+                        </select>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-6">
+                            <label class="form-label">From Date</label>
+                            <input type="date" class="form-control">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">To Date</label>
+                            <input type="date" class="form-control">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Clear</button>
+                <button type="button" class="btn btn-primary">Apply Filters</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // View toggle
+    document.getElementById('listView').addEventListener('change', function() {
+        if (this.checked) {
+            document.getElementById('listViewContent').style.display = 'block';
+            document.getElementById('cardViewContent').style.display = 'none';
+        }
+    });
+    
+    document.getElementById('cardView').addEventListener('change', function() {
+        if (this.checked) {
+            document.getElementById('listViewContent').style.display = 'none';
+            document.getElementById('cardViewContent').style.display = 'block';
+        }
+    });
+});
+</script>
+{% endblock %}

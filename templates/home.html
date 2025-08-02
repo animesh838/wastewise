@@ -1,0 +1,381 @@
+{% extends 'base/base.html' %}
+
+{% block title %}WasteWise - Smart Waste Management{% endblock %}
+
+{% block content %}
+<!-- Particle Background Container -->
+<div id="particles" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;"></div>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center min-vh-100">
+            <div class="col-lg-6 hero-content">
+                <div data-reveal="fade-right">
+                    <h1 class="hero-title" data-typing="Transform Your City's Waste Management" data-typing-speed="80"></h1>
+                    <p class="hero-subtitle" data-reveal="fade-up">
+                        Join the revolution in smart waste management. IoT-powered bins, AI-driven analytics, 
+                        and gamified recycling for a sustainable future.
+                    </p>
+                    <div class="hero-actions" data-reveal="fade-up">
+                        {% if not user.is_authenticated %}
+                            <a href="{% url 'users:register' %}" class="btn-modern">
+                                <i class="bi bi-rocket-takeoff"></i> Start Your Journey
+                            </a>
+                            <a href="{% url 'users:login' %}" class="btn-outline-modern">
+                                <i class="bi bi-box-arrow-in-right"></i> Login
+                            </a>
+                        {% else %}
+                            <a href="{% url 'waste:schedule_pickup' %}" class="btn-modern">
+                                <i class="bi bi-calendar-plus"></i> Schedule Pickup
+                            </a>
+                            <a href="{% url 'users:dashboard' %}" class="btn-outline-modern">
+                                <i class="bi bi-speedometer2"></i> Dashboard
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6" data-reveal="fade-left">
+                <div class="hero-stats stagger-animation">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="stats-card floating" data-tilt>
+                                <div class="stats-number" data-counter="15000">0</div>
+                                <div class="stats-label">Active Users</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="stats-card floating" data-tilt style="animation-delay: 1s;">
+                                <div class="stats-number" data-counter="500">0</div>
+                                <div class="stats-label">Smart Bins</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="stats-card floating" data-tilt style="animation-delay: 2s;">
+                                <div class="stats-number" data-counter="89">0</div>
+                                <div class="stats-label">Waste Reduced %</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="stats-card floating" data-tilt style="animation-delay: 3s;">
+                                <div class="stats-number" data-counter="2500">0</div>
+                                <div class="stats-label">Tons Recycled</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- User Impact Section (for authenticated users) -->
+{% if user.is_authenticated %}
+<section class="content-wrapper">
+    <div class="container py-5">
+        <div class="row text-center mb-5">
+            <div class="col-lg-8 mx-auto" data-reveal="fade-up">
+                <h2 class="display-5 fw-bold mb-4">Your Environmental Impact</h2>
+                <p class="lead text-white-50">Track your progress and see the difference you're making</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-3" data-reveal="fade-up">
+                <div class="stats-card pulse-glow" data-tilt>
+                    <div class="stats-number" data-counter="{{ user.points|default:0 }}">0</div>
+                    <div class="stats-label">Points Earned</div>
+                                                <div class="progress-modern mt-3">
+                                <div class="progress-bar-modern" style="width: {% widthratio user.points|default:0 1000 100 %}%"></div>
+                            </div>
+                </div>
+            </div>
+            <div class="col-md-3" data-reveal="fade-up">
+                <div class="stats-card pulse-glow" data-tilt style="animation-delay: 0.2s;">
+                    <div class="stats-number" data-counter="{{ user.level|default:1 }}">0</div>
+                    <div class="stats-label">Current Level</div>
+                                                <div class="progress-modern mt-3">
+                                <div class="progress-bar-modern" style="width: {% widthratio user.level|default:1 5 100 %}%; background: var(--blue-gradient);"></div>
+                            </div>
+                </div>
+            </div>
+            <div class="col-md-3" data-reveal="fade-up">
+                <div class="stats-card pulse-glow" data-tilt style="animation-delay: 0.4s;">
+                    <div class="stats-number" data-counter="{{ user.recycling_streak|default:0 }}">0</div>
+                    <div class="stats-label">Day Streak</div>
+                                                <div class="progress-modern mt-3">
+                                <div class="progress-bar-modern" style="width: {% widthratio user.recycling_streak|default:0 30 100 %}%; background: var(--warning-gradient);"></div>
+                            </div>
+                </div>
+            </div>
+            <div class="col-md-3" data-reveal="fade-up">
+                <div class="stats-card pulse-glow" data-tilt style="animation-delay: 0.6s;">
+                    <div class="stats-number" data-counter="{{ total_pickups|default:0 }}">0</div>
+                    <div class="stats-label">Total Pickups</div>
+                                                <div class="progress-modern mt-3">
+                                <div class="progress-bar-modern" style="width: {% widthratio total_pickups|default:0 20 100 %}%; background: var(--purple-gradient);"></div>
+                            </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Features Section -->
+<section class="content-wrapper">
+    <div class="container py-5">
+        <div class="row text-center mb-5">
+            <div class="col-lg-8 mx-auto" data-reveal="fade-up">
+                <h2 class="display-5 fw-bold mb-4">Revolutionary Features</h2>
+                <p class="lead text-white-50">Experience the future of waste management with cutting-edge technology</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-4" data-reveal="fade-up">
+                <div class="card-modern h-100" data-tilt>
+                    <div class="card-body text-center p-4">
+                        <div class="icon-bounce mb-4">
+                            <i class="bi bi-calendar-check" style="font-size: 3rem; color: #11998e;"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">Smart Scheduling</h4>
+                        <p class="text-muted">AI-optimized pickup schedules that adapt to your needs and local collection routes for maximum efficiency.</p>
+                        <div class="progress-modern">
+                            <div class="progress-bar-modern" style="width: 95%"></div>
+                        </div>
+                        <small class="text-muted">95% On-time Rate</small>
+                        <div class="mt-3">
+                            <a href="{% url 'waste:schedule_pickup' %}" class="btn btn-success">Schedule Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4" data-reveal="fade-up">
+                <div class="card-modern h-100" data-tilt>
+                    <div class="card-body text-center p-4">
+                        <div class="icon-bounce mb-4" style="animation-delay: 0.5s;">
+                            <i class="bi bi-cpu" style="font-size: 3rem; color: #667eea;"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">IoT Monitoring</h4>
+                        <p class="text-muted">Real-time sensor data from smart bins tracking fill levels, temperature, and environmental conditions.</p>
+                        <div class="progress-modern">
+                            <div class="progress-bar-modern" style="width: 88%; background: var(--blue-gradient);"></div>
+                        </div>
+                        <small class="text-muted">88% Sensor Coverage</small>
+                        <div class="mt-3">
+                            <a href="{% url 'sensors:dashboard' %}" class="btn btn-primary">View Dashboard</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4" data-reveal="fade-up">
+                <div class="card-modern h-100" data-tilt>
+                    <div class="card-body text-center p-4">
+                        <div class="icon-bounce mb-4" style="animation-delay: 1s;">
+                            <i class="bi bi-trophy" style="font-size: 3rem; color: #f093fb;"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">Gamified Rewards</h4>
+                        <p class="text-muted">Earn points, unlock exclusive badges, and compete on community leaderboards for sustainable practices.</p>
+                        <div class="progress-modern">
+                            <div class="progress-bar-modern" style="width: 92%; background: var(--warning-gradient);"></div>
+                        </div>
+                        <small class="text-muted">92% User Engagement</small>
+                        <div class="mt-3">
+                            <a href="{% url 'gamification:home' %}" class="btn btn-warning">Explore Rewards</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="content-wrapper">
+    <div class="container py-5">
+        <div class="row text-center mb-5">
+            <div class="col-lg-8 mx-auto" data-reveal="fade-up">
+                <h2 class="display-5 fw-bold mb-4">How It Works</h2>
+                <p class="lead text-white-50">Simple steps to transform your waste management experience</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-3 text-center" data-reveal="fade-up">
+                <div class="glass-card p-4 h-100" data-tilt>
+                    <div class="mb-4">
+                        <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center icon-bounce" 
+                             style="width: 80px; height: 80px; background: var(--success-gradient); color: white;">
+                            <span class="h3 mb-0 fw-bold">1</span>
+                        </div>
+                    </div>
+                    <h5 class="fw-bold mb-3">Segregate Waste</h5>
+                    <p class="text-muted">Separate waste into categories: organic, plastic, paper, and metal using our smart guidelines.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-3 text-center" data-reveal="fade-up">
+                <div class="glass-card p-4 h-100" data-tilt>
+                    <div class="mb-4">
+                        <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center icon-bounce" 
+                             style="width: 80px; height: 80px; background: var(--blue-gradient); color: white; animation-delay: 0.5s;">
+                            <span class="h3 mb-0 fw-bold">2</span>
+                        </div>
+                    </div>
+                    <h5 class="fw-bold mb-3">Schedule Pickup</h5>
+                    <p class="text-muted">Book convenient time slots through our AI-powered scheduling system that optimizes routes.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-3 text-center" data-reveal="fade-up">
+                <div class="glass-card p-4 h-100" data-tilt>
+                    <div class="mb-4">
+                        <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center icon-bounce" 
+                             style="width: 80px; height: 80px; background: var(--warning-gradient); color: white; animation-delay: 1s;">
+                            <span class="h3 mb-0 fw-bold">3</span>
+                        </div>
+                    </div>
+                    <h5 class="fw-bold mb-3">Smart Collection</h5>
+                    <p class="text-muted">Our trained eco-collectors pick up your segregated waste with real-time tracking and updates.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-3 text-center" data-reveal="fade-up">
+                <div class="glass-card p-4 h-100" data-tilt>
+                    <div class="mb-4">
+                        <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center icon-bounce" 
+                             style="width: 80px; height: 80px; background: var(--purple-gradient); color: white; animation-delay: 1.5s;">
+                            <span class="h3 mb-0 fw-bold">4</span>
+                        </div>
+                    </div>
+                    <h5 class="fw-bold mb-3">Earn & Impact</h5>
+                    <p class="text-muted">Gain points for consistency, unlock achievements, and track your positive environmental impact.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="hero-section" style="min-height: 60vh;">
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8" data-reveal="zoom">
+                <h2 class="hero-title" style="font-size: 3rem; margin-bottom: 2rem;">
+                    Ready to Make a Difference?
+                </h2>
+                <p class="hero-subtitle mb-4">
+                    Join thousands of eco-warriors who are already transforming their communities through smart waste management.
+                </p>
+                <div class="d-flex flex-column flex-md-row gap-3 justify-content-center">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'waste:schedule_pickup' %}" class="btn-modern">
+                            <i class="bi bi-calendar-plus"></i> Schedule Your Next Pickup
+                        </a>
+                        <a href="{% url 'users:dashboard' %}" class="btn-outline-modern">
+                            <i class="bi bi-speedometer2"></i> View Dashboard
+                        </a>
+                    {% else %}
+                        <a href="{% url 'users:register' %}" class="btn-modern">
+                            <i class="bi bi-person-plus"></i> Join Now - Free
+                        </a>
+                        <a href="{% url 'users:login' %}" class="btn-outline-modern">
+                            <i class="bi bi-box-arrow-in-right"></i> Login
+                        </a>
+                    {% endif %}
+                </div>
+                
+                <!-- Live Stats -->
+                <div class="row mt-5 g-4">
+                    <div class="col-md-3 col-6">
+                        <div class="text-center">
+                            <div class="stats-number pulse-glow" data-counter="24">0</div>
+                            <small class="text-white-50">Hours Saved Daily</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="text-center">
+                            <div class="stats-number pulse-glow" data-counter="78">0</div>
+                            <small class="text-white-50">Cities Connected</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="text-center">
+                            <div class="stats-number pulse-glow" data-counter="340">0</div>
+                            <small class="text-white-50">Tons CO₂ Saved</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="text-center">
+                            <div class="stats-number pulse-glow" data-counter="1200">0</div>
+                            <small class="text-white-50">Active Routes</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add some extra sparkle to the homepage
+    
+    // Animate counters when they come into view
+    const counters = document.querySelectorAll('[data-counter]');
+    const counterObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const counter = entry.target;
+                const target = parseInt(counter.getAttribute('data-counter'));
+                WasteWise.animateValue(counter, 0, target, 2500);
+                counterObserver.unobserve(counter);
+            }
+        });
+    });
+    
+    counters.forEach(counter => counterObserver.observe(counter));
+    
+    // Add floating effect to hero elements
+    const floatingElements = document.querySelectorAll('.floating');
+    floatingElements.forEach((element, index) => {
+        element.style.animationDelay = `${index * 0.5}s`;
+    });
+    
+    // Interactive demo notification
+    setTimeout(() => {
+        WasteWise.showModernNotification(
+            'Welcome to WasteWise! 🌱 Your journey to sustainable waste management starts here.',
+            'success',
+            7000
+        );
+    }, 2000);
+    
+    // Add some interactive particles
+    if (document.getElementById('particles')) {
+        const particleContainer = document.getElementById('particles');
+        
+        // Create floating particles
+        for (let i = 0; i < 30; i++) {
+            const particle = document.createElement('div');
+            particle.style.cssText = `
+                position: absolute;
+                width: ${Math.random() * 6 + 2}px;
+                height: ${Math.random() * 6 + 2}px;
+                background: rgba(255, 255, 255, ${Math.random() * 0.3 + 0.1});
+                border-radius: 50%;
+                left: ${Math.random() * 100}%;
+                top: ${Math.random() * 100}%;
+                animation: float ${Math.random() * 4 + 3}s ease-in-out infinite;
+                animation-delay: ${Math.random() * 2}s;
+            `;
+            particleContainer.appendChild(particle);
+        }
+    }
+});
+</script>
+{% endblock %}

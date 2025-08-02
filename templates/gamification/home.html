@@ -1,0 +1,441 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Rewards & Gamification - WasteWise{% endblock %}
+
+{% block extra_css %}
+<style>
+    .reward-card {
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+    
+    .reward-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        border-color: #28a745;
+    }
+    
+    .badge-showcase {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        padding: 2rem;
+        margin: 1rem 0;
+    }
+    
+    .leaderboard-entry {
+        transition: all 0.3s ease;
+        border-left: 4px solid transparent;
+    }
+    
+    .leaderboard-entry:hover {
+        border-left-color: #28a745;
+        background-color: #f8fff9;
+    }
+    
+    .leaderboard-entry.current-user {
+        border-left-color: #ffc107;
+        background-color: #fff8e1;
+    }
+    
+    .points-display {
+        font-size: 2.5rem;
+        font-weight: bold;
+        background: linear-gradient(45deg, #28a745, #20c997);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .level-badge {
+        background: linear-gradient(45deg, #ffd700, #ffed4e);
+        color: #333;
+        font-weight: bold;
+        padding: 0.5rem 1.5rem;
+        border-radius: 25px;
+        font-size: 1.1rem;
+    }
+    
+    .streak-counter {
+        background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+        color: white;
+        font-weight: bold;
+        padding: 0.5rem 1.5rem;
+        border-radius: 25px;
+        font-size: 1.1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="bg-gradient text-white p-5 rounded" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <div class="text-center">
+                <h1 class="display-5">
+                    <i class="bi bi-trophy"></i> Rewards & Achievements
+                </h1>
+                <p class="lead">Turn recycling into a rewarding experience</p>
+                {% if user.is_authenticated %}
+                    <div class="row justify-content-center mt-4">
+                        <div class="col-md-2 text-center">
+                            <div class="points-display">{{ user.points|default:0 }}</div>
+                            <p class="mb-0">Total Points</p>
+                        </div>
+                        <div class="col-md-2 text-center">
+                            <div class="level-badge">Level {{ user.level|default:1 }}</div>
+                        </div>
+                        <div class="col-md-2 text-center">
+                            <div class="streak-counter">{{ user.recycling_streak|default:0 }} Days</div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Stats -->
+{% if user.is_authenticated %}
+<div class="row mb-5">
+    <div class="col-md-3 mb-3">
+        <div class="card bg-success text-white text-center">
+            <div class="card-body">
+                <i class="bi bi-award" style="font-size: 2.5rem;"></i>
+                <h4 class="mt-2">{{ user.points|default:0 }}</h4>
+                <p class="mb-0">Points Earned</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-warning text-white text-center">
+            <div class="card-body">
+                <i class="bi bi-trophy" style="font-size: 2.5rem;"></i>
+                <h4 class="mt-2">{{ user.level|default:1 }}</h4>
+                <p class="mb-0">Current Level</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-info text-white text-center">
+            <div class="card-body">
+                <i class="bi bi-fire" style="font-size: 2.5rem;"></i>
+                <h4 class="mt-2">{{ user.recycling_streak|default:0 }}</h4>
+                <p class="mb-0">Day Streak</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-primary text-white text-center">
+            <div class="card-body">
+                <i class="bi bi-star" style="font-size: 2.5rem;"></i>
+                <h4 class="mt-2">5</h4>
+                <p class="mb-0">Badges Earned</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Quick Actions -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title text-center mb-4">
+                    <i class="bi bi-lightning-fill text-warning"></i> Quick Actions
+                </h5>
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <a href="{% url 'gamification:rewards' %}" class="btn btn-success w-100 p-3">
+                            <i class="bi bi-gift d-block mb-2" style="font-size: 2rem;"></i>
+                            Browse Rewards
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{% url 'gamification:leaderboard' %}" class="btn btn-primary w-100 p-3">
+                            <i class="bi bi-trophy d-block mb-2" style="font-size: 2rem;"></i>
+                            View Leaderboard
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{% url 'gamification:badges' %}" class="btn btn-warning w-100 p-3">
+                            <i class="bi bi-award d-block mb-2" style="font-size: 2rem;"></i>
+                            Earn Badges
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{% url 'gamification:my_rewards' %}" class="btn btn-info w-100 p-3">
+                            <i class="bi bi-bag-check d-block mb-2" style="font-size: 2rem;"></i>
+                            My Rewards
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Featured Rewards -->
+<div class="row mb-5">
+    <div class="col-12">
+        <h3 class="mb-4">
+            <i class="bi bi-star-fill text-warning"></i> Featured Rewards
+        </h3>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="reward-card card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-cup text-success" style="font-size: 3rem;"></i>
+                <h6 class="mt-3">Coffee Shop Voucher</h6>
+                <p class="text-muted">$5 off your next coffee purchase</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="badge bg-success">500 points</span>
+                    <button class="btn btn-outline-success btn-sm">Redeem</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="reward-card card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-bicycle text-primary" style="font-size: 3rem;"></i>
+                <h6 class="mt-3">Bike Rental Credit</h6>
+                <p class="text-muted">2 hours free bike rental</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="badge bg-primary">750 points</span>
+                    <button class="btn btn-outline-primary btn-sm">Redeem</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="reward-card card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-tree text-success" style="font-size: 3rem;"></i>
+                <h6 class="mt-3">Plant a Tree</h6>
+                <p class="text-muted">Donate to plant a tree in your name</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="badge bg-success">1000 points</span>
+                    <button class="btn btn-outline-success btn-sm">Redeem</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Leaderboard Preview -->
+<div class="row mb-5">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-trophy text-warning"></i> Weekly Leaderboard
+                    <a href="{% url 'gamification:leaderboard' %}" class="btn btn-sm btn-outline-primary float-end">
+                        View Full Leaderboard
+                    </a>
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="leaderboard-entry d-flex align-items-center p-3 mb-2 rounded">
+                    <div class="me-3">
+                        <span class="badge bg-warning text-dark h5 mb-0">1</span>
+                    </div>
+                    <div class="me-3">
+                        <div class="rounded-circle bg-success d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                            <i class="bi bi-person text-white"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-0">EcoChampion2024</h6>
+                        <small class="text-muted">Level 12 • 25 day streak</small>
+                    </div>
+                    <div class="text-end">
+                        <div class="fw-bold text-success">2,450 pts</div>
+                        <small class="text-muted">This week</small>
+                    </div>
+                </div>
+
+                <div class="leaderboard-entry d-flex align-items-center p-3 mb-2 rounded">
+                    <div class="me-3">
+                        <span class="badge bg-secondary h5 mb-0">2</span>
+                    </div>
+                    <div class="me-3">
+                        <div class="rounded-circle bg-primary d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                            <i class="bi bi-person text-white"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-0">GreenWarrior</h6>
+                        <small class="text-muted">Level 10 • 18 day streak</small>
+                    </div>
+                    <div class="text-end">
+                        <div class="fw-bold text-success">2,180 pts</div>
+                        <small class="text-muted">This week</small>
+                    </div>
+                </div>
+
+                <div class="leaderboard-entry d-flex align-items-center p-3 mb-2 rounded">
+                    <div class="me-3">
+                        <span class="badge bg-warning text-dark h5 mb-0">3</span>
+                    </div>
+                    <div class="me-3">
+                        <div class="rounded-circle bg-info d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                            <i class="bi bi-person text-white"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-0">RecycleKing</h6>
+                        <small class="text-muted">Level 9 • 12 day streak</small>
+                    </div>
+                    <div class="text-end">
+                        <div class="fw-bold text-success">1,890 pts</div>
+                        <small class="text-muted">This week</small>
+                    </div>
+                </div>
+
+                {% if user.is_authenticated %}
+                <div class="leaderboard-entry current-user d-flex align-items-center p-3 mb-2 rounded">
+                    <div class="me-3">
+                        <span class="badge bg-info h5 mb-0">7</span>
+                    </div>
+                    <div class="me-3">
+                        <div class="rounded-circle bg-success d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                            <i class="bi bi-person text-white"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-0">{{ user.username }} <small class="text-muted">(You)</small></h6>
+                        <small class="text-muted">Level {{ user.level|default:1 }} • {{ user.recycling_streak|default:0 }} day streak</small>
+                    </div>
+                    <div class="text-end">
+                        <div class="fw-bold text-warning">{{ user.points|default:0 }} pts</div>
+                        <small class="text-muted">This week</small>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="badge-showcase text-white text-center">
+            <h5 class="mb-3">Recent Badges</h5>
+            <div class="row">
+                <div class="col-6 mb-3">
+                    <i class="bi bi-recycle" style="font-size: 2.5rem;"></i>
+                    <p class="small mt-1 mb-0">Eco Warrior</p>
+                </div>
+                <div class="col-6 mb-3">
+                    <i class="bi bi-fire" style="font-size: 2.5rem;"></i>
+                    <p class="small mt-1 mb-0">Streak Master</p>
+                </div>
+                <div class="col-6 mb-3">
+                    <i class="bi bi-people" style="font-size: 2.5rem;"></i>
+                    <p class="small mt-1 mb-0">Community Hero</p>
+                </div>
+                <div class="col-6 mb-3">
+                    <i class="bi bi-star" style="font-size: 2.5rem;"></i>
+                    <p class="small mt-1 mb-0">Rising Star</p>
+                </div>
+            </div>
+            <a href="{% url 'gamification:badges' %}" class="btn btn-light btn-sm">
+                View All Badges
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Achievement Progress -->
+{% if user.is_authenticated %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-target text-primary"></i> Achievement Progress
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Recycling Master (Complete 50 pickups)</span>
+                            <span class="text-muted">{{ total_pickups|default:0 }}/50</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-success" style="width: {% widthratio total_pickups|default:0 50 100 %}%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Points Champion (Earn 5000 points)</span>
+                            <span class="text-muted">{{ user.points|default:0 }}/5000</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-warning" style="width: {% widthratio user.points|default:0 5000 100 %}%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Streak Legend (30 day streak)</span>
+                            <span class="text-muted">{{ user.recycling_streak|default:0 }}/30</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-info" style="width: {% widthratio user.recycling_streak|default:0 30 100 %}%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Level Master (Reach Level 10)</span>
+                            <span class="text-muted">{{ user.level|default:1 }}/10</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-primary" style="width: {% widthratio user.level|default:1 10 100 %}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add some interactive animations
+    const rewardCards = document.querySelectorAll('.reward-card');
+    rewardCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-8px) scale(1.02)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+    
+    // Animate progress bars on scroll
+    const progressBars = document.querySelectorAll('.progress-bar');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const progressBar = entry.target;
+                const width = progressBar.style.width;
+                progressBar.style.width = '0%';
+                setTimeout(() => {
+                    progressBar.style.width = width;
+                }, 100);
+            }
+        });
+    });
+    
+    progressBars.forEach(bar => observer.observe(bar));
+});
+</script>
+{% endblock %}

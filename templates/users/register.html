@@ -1,0 +1,158 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Register - WasteWise{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <i class="bi bi-person-plus text-success" style="font-size: 3rem;"></i>
+                    <h3 class="mt-3">Join WasteWise</h3>
+                    <p class="text-muted">Create your account and start making a difference</p>
+                </div>
+
+                <form method="post" id="registrationForm">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-person"></i> First Name
+                            </label>
+                            <input type="text" name="first_name" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-person"></i> Last Name
+                            </label>
+                            <input type="text" name="last_name" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-envelope"></i> Email Address
+                        </label>
+                        <input type="email" name="email" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-person-badge"></i> Username
+                        </label>
+                        <input type="text" name="username" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-telephone"></i> Phone Number
+                        </label>
+                        <input type="tel" name="phone_number" class="form-control" placeholder="+1234567890">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-people"></i> User Type
+                        </label>
+                        <select name="user_type" class="form-select">
+                            <option value="resident">Resident</option>
+                            <option value="collector">Waste Collector</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-geo-alt"></i> Address
+                        </label>
+                        <textarea name="address" class="form-control" rows="2" placeholder="Your full address"></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">City</label>
+                            <input type="text" name="city" class="form-control">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">State</label>
+                            <input type="text" name="state" class="form-control">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Postal Code</label>
+                            <input type="text" name="postal_code" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-lock"></i> Password
+                        </label>
+                        <input type="password" name="password1" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-lock-fill"></i> Confirm Password
+                        </label>
+                        <input type="password" name="password2" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="agreeTerms" required>
+                        <label class="form-check-label" for="agreeTerms">
+                            I agree to the <a href="#" class="text-success">Terms of Service</a> and 
+                            <a href="#" class="text-success">Privacy Policy</a>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100 mb-3">
+                        <i class="bi bi-person-plus"></i> Create Account
+                    </button>
+                </form>
+
+                <div class="text-center">
+                    <p class="text-muted">
+                        Already have an account? 
+                        <a href="{% url 'users:login' %}" class="text-success text-decoration-none fw-bold">Sign in here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Benefits section -->
+        <div class="row mt-4 text-center">
+            <div class="col-12 mb-3">
+                <h5 class="text-success">Why Join WasteWise?</h5>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card border-0 bg-light h-100">
+                    <div class="card-body">
+                        <i class="bi bi-recycle text-success mb-2" style="font-size: 2rem;"></i>
+                        <h6>Environmental Impact</h6>
+                        <small class="text-muted">Track your recycling contributions and see your positive environmental impact</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card border-0 bg-light h-100">
+                    <div class="card-body">
+                        <i class="bi bi-gift text-warning mb-2" style="font-size: 2rem;"></i>
+                        <h6>Earn Rewards</h6>
+                        <small class="text-muted">Get points for proper waste segregation and redeem exciting rewards</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card border-0 bg-light h-100">
+                    <div class="card-body">
+                        <i class="bi bi-people text-primary mb-2" style="font-size: 2rem;"></i>
+                        <h6>Community</h6>
+                        <small class="text-muted">Join a community of environmentally conscious individuals</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

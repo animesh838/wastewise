@@ -1,0 +1,92 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Rewards Marketplace - WasteWise{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4">
+            <i class="bi bi-gift text-success"></i> Rewards Marketplace
+            <small class="text-muted">
+                Your Points: <span class="badge bg-success">{{ user.points|default:0 }}</span>
+            </small>
+        </h2>
+    </div>
+</div>
+
+<!-- Categories -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="btn-group" role="group">
+            <input type="radio" class="btn-check" name="category" id="allRewards" autocomplete="off" checked>
+            <label class="btn btn-outline-primary" for="allRewards">All Rewards</label>
+            
+            <input type="radio" class="btn-check" name="category" id="discountRewards" autocomplete="off">
+            <label class="btn btn-outline-primary" for="discountRewards">Discounts</label>
+            
+            <input type="radio" class="btn-check" name="category" id="voucherRewards" autocomplete="off">
+            <label class="btn btn-outline-primary" for="voucherRewards">Vouchers</label>
+            
+            <input type="radio" class="btn-check" name="category" id="donationRewards" autocomplete="off">
+            <label class="btn btn-outline-primary" for="donationRewards">Donations</label>
+        </div>
+    </div>
+</div>
+
+<!-- Rewards Grid -->
+<div class="row">
+    <!-- Coffee Voucher -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-cup text-warning" style="font-size: 4rem;"></i>
+                <h5 class="mt-3">Coffee Shop Voucher</h5>
+                <p class="text-muted">$5 off your next coffee purchase at participating cafes</p>
+                <div class="mb-3">
+                    <span class="badge bg-success">500 points</span>
+                    <span class="badge bg-info">20 available</span>
+                </div>
+                <button class="btn btn-success w-100">
+                    <i class="bi bi-cart-plus"></i> Redeem Now
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Plant a Tree -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-tree text-success" style="font-size: 4rem;"></i>
+                <h5 class="mt-3">Plant a Tree</h5>
+                <p class="text-muted">Donate to plant a tree in your local community</p>
+                <div class="mb-3">
+                    <span class="badge bg-success">1000 points</span>
+                    <span class="badge bg-warning">Popular</span>
+                </div>
+                <button class="btn btn-success w-100">
+                    <i class="bi bi-heart"></i> Donate
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bike Rental -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-bicycle text-primary" style="font-size: 4rem;"></i>
+                <h5 class="mt-3">Bike Rental Credit</h5>
+                <p class="text-muted">2 hours of free bike rental from city bike stations</p>
+                <div class="mb-3">
+                    <span class="badge bg-primary">750 points</span>
+                    <span class="badge bg-info">15 available</span>
+                </div>
+                <button class="btn btn-primary w-100">
+                    <i class="bi bi-bicycle"></i> Get Credit
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
