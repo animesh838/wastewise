@@ -84,10 +84,10 @@
                                 <li><a class="dropdown-item" href="{% url 'sensors:maintenance' %}"><i class="bi bi-tools"></i> Maintenance</a></li>
                                 {% endif %}
                                 <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form method="post" action="{% url 'users:logout' %}" class="dropdown-logout-form">
+                                <li class="dropdown-item logout-item">
+                                    <form method="post" action="{% url 'users:logout' %}" class="logout-form">
                                         {% csrf_token %}
-                                        <button type="submit" class="dropdown-item logout-btn">
+                                        <button type="submit" class="logout-button">
                                             <i class="bi bi-box-arrow-right"></i> Logout
                                         </button>
                                     </form>

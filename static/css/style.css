@@ -850,36 +850,51 @@ body {
 }
 
 /* Logout button styles to prevent overlapping */
-.dropdown-logout-form {
-    margin: 0;
-    padding: 0;
-    display: block;
-    width: 100%;
+.logout-item {
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    background: none !important;
 }
 
-.logout-btn {
+.logout-form {
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+    width: 100% !important;
+}
+
+.logout-button {
     border: none !important;
     background: none !important;
     width: 100% !important;
     text-align: left !important;
-    padding: 0.25rem 1rem !important;
+    padding: 0.5rem 1rem !important;
     margin: 0 !important;
     display: block !important;
     position: relative !important;
     z-index: 1 !important;
     transition: all 0.2s ease !important;
+    color: inherit !important;
+    font-size: inherit !important;
+    font-family: inherit !important;
+    cursor: pointer !important;
 }
 
-.logout-btn:hover {
+.logout-button:hover {
     background-color: rgba(0, 0, 0, 0.05) !important;
     color: #dc3545 !important;
     transform: translateX(5px) !important;
 }
 
-.logout-btn:focus {
+.logout-button:focus {
     outline: none !important;
     box-shadow: none !important;
     background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+.logout-button:active {
+    transform: translateX(5px) scale(0.98) !important;
 }
 
 /* Ensure dropdown menu has proper spacing */
@@ -892,6 +907,7 @@ body {
     border-radius: 12px !important;
     background: rgba(255, 255, 255, 0.95) !important;
     backdrop-filter: blur(10px) !important;
+    overflow: hidden !important;
 }
 
 .dropdown-item {
@@ -900,6 +916,8 @@ body {
     border: none !important;
     background: none !important;
     transition: all 0.2s ease !important;
+    position: relative !important;
+    z-index: 1 !important;
 }
 
 .dropdown-item:hover {
@@ -910,4 +928,15 @@ body {
 .dropdown-divider {
     margin: 0.5rem 0 !important;
     border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Override any conflicting Bootstrap styles */
+.dropdown-menu li {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.dropdown-menu form {
+    margin: 0 !important;
+    padding: 0 !important;
 }
