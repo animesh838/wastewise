@@ -85,9 +85,9 @@
                                 {% endif %}
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <form method="post" action="{% url 'users:logout' %}" style="margin: 0;">
+                                    <form method="post" action="{% url 'users:logout' %}" class="dropdown-logout-form">
                                         {% csrf_token %}
-                                        <button type="submit" class="dropdown-item" style="border: none; background: none; width: 100%; text-align: left; padding: 0.25rem 1rem;">
+                                        <button type="submit" class="dropdown-item logout-btn">
                                             <i class="bi bi-box-arrow-right"></i> Logout
                                         </button>
                                     </form>

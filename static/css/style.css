@@ -848,3 +848,66 @@ body {
     border-radius: 50px;
     display: inline-block;
 }
+
+/* Logout button styles to prevent overlapping */
+.dropdown-logout-form {
+    margin: 0;
+    padding: 0;
+    display: block;
+    width: 100%;
+}
+
+.logout-btn {
+    border: none !important;
+    background: none !important;
+    width: 100% !important;
+    text-align: left !important;
+    padding: 0.25rem 1rem !important;
+    margin: 0 !important;
+    display: block !important;
+    position: relative !important;
+    z-index: 1 !important;
+    transition: all 0.2s ease !important;
+}
+
+.logout-btn:hover {
+    background-color: rgba(0, 0, 0, 0.05) !important;
+    color: #dc3545 !important;
+    transform: translateX(5px) !important;
+}
+
+.logout-btn:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Ensure dropdown menu has proper spacing */
+.dropdown-menu {
+    min-width: 200px !important;
+    padding: 0.5rem 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
+    border-radius: 12px !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+.dropdown-item {
+    padding: 0.5rem 1rem !important;
+    margin: 0 !important;
+    border: none !important;
+    background: none !important;
+    transition: all 0.2s ease !important;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(0, 0, 0, 0.05) !important;
+    transform: translateX(5px) !important;
+}
+
+.dropdown-divider {
+    margin: 0.5rem 0 !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+}
