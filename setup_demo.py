@@ -49,5 +49,42 @@ def create_demo_user():
     print(f"📧 Email: {email}")
     print(f"🔑 Password: {password}")
 
+def create_superuser():
+    """Create superuser if it doesn't exist"""
+    email = 'admin@wastemanagement.com'
+    password = 'admin123'
+    
+    user, created = User.objects.get_or_create(
+        email=email,
+        defaults={
+            'username': 'admin_user',
+            'first_name': 'Admin',
+            'last_name': 'User',
+            'user_type': 'admin',
+            'is_superuser': True,
+            'is_staff': True,
+            'points': 5000,
+            'level': 15,
+            'recycling_streak': 30,
+            'city': 'Mumbai',
+            'state': 'Maharashtra',
+            'address': '456 Admin Street'
+        }
+    )
+    
+    if created:
+        user.set_password(password)
+        user.save()
+        print(f"✅ Created superuser: {email}")
+    else:
+        # Update password in case it was changed
+        user.set_password(password)
+        user.save()
+        print(f"✅ Updated superuser: {email}")
+    
+    print(f"📧 Admin Email: {email}")
+    print(f"🔑 Admin Password: {password}")
+
 if __name__ == '__main__':
-    create_demo_user() 
+    create_demo_user()
+    create_superuser() 
