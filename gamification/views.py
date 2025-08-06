@@ -18,10 +18,25 @@ class LeaderboardDetailView(DetailView):
     slug_field = 'leaderboard_type'
     slug_url_kwarg = 'board_type'
 
-class BadgeListView(ListView):
+class BadgeListView(LoginRequiredMixin, ListView):
     model = Badge
     template_name = 'gamification/badges.html'
     context_object_name = 'badges'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        
+        # Get user's earned badges
+        user_badges = UserBadge.objects.filter(user=user).values_list('badge_id', flat=True)
+        context['user_badges'] = Badge.objects.filter(id__in=user_badges)
+        
+        # Calculate statistics
+        context['total_points'] = sum(badge.points_required for badge in context['user_badges'])
+        context['completion_percentage'] = int((len(context['user_badges']) / max(len(context['badges']), 1)) * 100)
+        context['rare_badges'] = len(context['user_badges'].filter(rarity__in=['rare', 'epic', 'legendary']))
+        
+        return context
 
 class RewardListView(ListView):
     model = Reward

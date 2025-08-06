@@ -1,0 +1,280 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Badges - WasteWise{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-gradient-success text-white">
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h2 class="mb-2">
+                                <i class="bi bi-award"></i> Achievement Badges
+                            </h2>
+                            <p class="mb-0 opacity-75">
+                                Unlock badges by completing recycling challenges and contributing to a sustainable future
+                            </p>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <div class="badge bg-light text-dark fs-6 p-2">
+                                <i class="bi bi-star-fill text-warning"></i>
+                                {{ user_badges.count }} / {{ badges.count }} Earned
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Badges Grid -->
+    <div class="row">
+        {% for badge in badges %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card badge-card h-100 {% if badge in user_badges %}earned{% else %}locked{% endif %}"
+                 data-badge-id="{{ badge.id }}">
+                <div class="card-body text-center p-4">
+                    <!-- Badge Icon -->
+                    <div class="badge-icon mb-3">
+                        {% if badge in user_badges %}
+                            <i class="{{ badge.icon_class }} text-{{ badge.color|slice:"1:" }} fs-1"></i>
+                        {% else %}
+                            <i class="bi bi-lock text-muted fs-1"></i>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Badge Info -->
+                    <h5 class="card-title mb-2">{{ badge.name }}</h5>
+                    <p class="card-text text-muted mb-3">{{ badge.description }}</p>
+                    
+                    <!-- Progress Bar -->
+                    {% if badge in user_badges %}
+                        <div class="progress mb-3" style="height: 8px;">
+                            <div class="progress-bar bg-success" style="width: 100%"></div>
+                        </div>
+                        <span class="badge bg-success">Earned!</span>
+                    {% else %}
+                        <div class="progress mb-3" style="height: 8px;">
+                            <div class="progress-bar bg-secondary" style="width: 0%"></div>
+                        </div>
+                        <span class="badge bg-secondary">Locked</span>
+                    {% endif %}
+                    
+                    <!-- Requirements -->
+                    <div class="mt-3">
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle"></i>
+                            {{ badge.description }}
+                        </small>
+                    </div>
+                </div>
+                
+                <!-- Card Footer -->
+                <div class="card-footer bg-transparent border-0 pt-0">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <small class="text-muted">Points</small>
+                            <div class="fw-bold text-{{ badge.color|slice:"1:" }}">{{ badge.points_required }}</div>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Rarity</small>
+                            <div class="fw-bold">
+                                {% if badge.rarity == 'common' %}
+                                    <span class="text-success">Common</span>
+                                {% elif badge.rarity == 'rare' %}
+                                    <span class="text-primary">Rare</span>
+                                {% elif badge.rarity == 'epic' %}
+                                    <span class="text-warning">Epic</span>
+                                {% elif badge.rarity == 'legendary' %}
+                                    <span class="text-danger">Legendary</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center p-5">
+                    <i class="bi bi-award text-muted" style="font-size: 4rem;"></i>
+                    <h4 class="mt-3 text-muted">No Badges Available</h4>
+                    <p class="text-muted">Badges will be added soon. Start recycling to earn achievements!</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Statistics Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-graph-up"></i> Badge Statistics
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3 mb-3">
+                            <div class="stat-card">
+                                <div class="stat-number text-success">{{ user_badges.count }}</div>
+                                <div class="stat-label">Badges Earned</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="stat-card">
+                                <div class="stat-number text-primary">{{ total_points }}</div>
+                                <div class="stat-label">Total Points</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="stat-card">
+                                <div class="stat-number text-warning">{{ completion_percentage }}%</div>
+                                <div class="stat-label">Completion</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="stat-card">
+                                <div class="stat-number text-danger">{{ rare_badges }}</div>
+                                <div class="stat-label">Rare Badges</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Badge Detail Modal -->
+<div class="modal fade" id="badgeModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="badgeModalTitle">Badge Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="badgeModalBody">
+                <!-- Content will be loaded dynamically -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Badge card animations
+    const badgeCards = document.querySelectorAll('.badge-card');
+    
+    badgeCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const badgeId = this.dataset.badgeId;
+            showBadgeDetails(badgeId);
+        });
+        
+        // Hover effects
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+            this.style.boxShadow = '0 10px 25px rgba(0,0,0,0.15)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = '';
+        });
+    });
+    
+    // Show badge details in modal
+    function showBadgeDetails(badgeId) {
+        // This would typically fetch badge details via AJAX
+        // For now, we'll show a simple message
+        const modal = new bootstrap.Modal(document.getElementById('badgeModal'));
+        document.getElementById('badgeModalTitle').textContent = 'Badge Details';
+        document.getElementById('badgeModalBody').innerHTML = `
+            <div class="text-center">
+                <i class="bi bi-award text-success fs-1 mb-3"></i>
+                <h5>Badge Information</h5>
+                <p class="text-muted">Detailed information about this badge will be displayed here.</p>
+            </div>
+        `;
+        modal.show();
+    }
+    
+    // Animate progress bars
+    const progressBars = document.querySelectorAll('.progress-bar');
+    progressBars.forEach(bar => {
+        const width = bar.style.width;
+        bar.style.width = '0%';
+        setTimeout(() => {
+            bar.style.width = width;
+        }, 500);
+    });
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.badge-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+
+.badge-card:hover {
+    border-color: var(--bs-success);
+}
+
+.badge-card.earned {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.badge-card.locked {
+    opacity: 0.7;
+}
+
+.badge-icon {
+    transition: transform 0.3s ease;
+}
+
+.badge-card:hover .badge-icon {
+    transform: scale(1.1);
+}
+
+.stat-card {
+    padding: 1rem;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    display: block;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-top: 0.5rem;
+}
+
+.progress {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    transition: width 1s ease;
+}
+</style>
+{% endblock %} 
