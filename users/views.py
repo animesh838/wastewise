@@ -17,11 +17,13 @@ class LogoutView(View):
     template_name = 'users/logout.html'
     
     def get(self, request):
-        # Show logout confirmation page
-        return render(request, self.template_name)
+        # Logout the user directly on GET request
+        logout(request)
+        messages.success(request, 'You have been successfully logged out.')
+        return redirect('home')
     
     def post(self, request):
-        # Actually logout the user
+        # Also handle POST requests for backward compatibility
         logout(request)
         messages.success(request, 'You have been successfully logged out.')
         return redirect('home')

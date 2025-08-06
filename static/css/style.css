@@ -849,51 +849,34 @@ body {
     display: inline-block;
 }
 
-/* Logout button styles to prevent overlapping */
-.logout-item {
-    padding: 0 !important;
-    margin: 0 !important;
-    border: none !important;
-    background: none !important;
-}
-
-.logout-form {
-    margin: 0 !important;
-    padding: 0 !important;
+/* Logout link styles to prevent overlapping */
+.logout-link {
+    color: inherit !important;
+    text-decoration: none !important;
     display: block !important;
     width: 100% !important;
-}
-
-.logout-button {
-    border: none !important;
-    background: none !important;
-    width: 100% !important;
-    text-align: left !important;
     padding: 0.5rem 1rem !important;
     margin: 0 !important;
-    display: block !important;
+    transition: all 0.2s ease !important;
     position: relative !important;
     z-index: 1 !important;
-    transition: all 0.2s ease !important;
-    color: inherit !important;
-    font-size: inherit !important;
-    font-family: inherit !important;
-    cursor: pointer !important;
 }
 
-.logout-button:hover {
+.logout-link:hover {
     background-color: rgba(0, 0, 0, 0.05) !important;
     color: #dc3545 !important;
     transform: translateX(5px) !important;
+    text-decoration: none !important;
 }
 
-.logout-button:focus {
+.logout-link:focus {
     outline: none !important;
     box-shadow: none !important;
     background-color: rgba(0, 0, 0, 0.05) !important;
+    color: #dc3545 !important;
 }
 
-.logout-button:active {
+.logout-link:active {
     transform: translateX(5px) scale(0.98) !important;
 }
 
