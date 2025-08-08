@@ -32,6 +32,9 @@ media/
 .env
 .env.local
 .env.production
+.env.*
+*.env
+env/
 
 # Virtual environment
 venv/
