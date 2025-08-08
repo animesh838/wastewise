@@ -66,7 +66,7 @@
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
                                 <i class="bi bi-person-circle"></i> {{ user.first_name|default:user.email }}
                                 {% if user.points %}
                                     <span class="badge bg-warning text-dark ms-1">{{ user.points }} pts</span>

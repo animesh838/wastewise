@@ -918,3 +918,13 @@ body {
     margin: 0 !important;
     padding: 0 !important;
 }
+
+/* Navbar / dropdown stacking fix (Chrome) */
+.navbar {
+    position: relative !important;
+    z-index: 5000 !important;
+}
+
+.navbar .dropdown-menu {
+    z-index: 6000 !important;
+}
