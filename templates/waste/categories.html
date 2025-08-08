@@ -1,0 +1,47 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Waste Categories{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <h3 class="mb-0"><i class="bi bi-tags text-success"></i> Waste Categories</h3>
+  <a href="{% url 'waste:schedule_pickup' %}" class="btn btn-success"><i class="bi bi-calendar-plus"></i> Schedule a Pickup</a>
+  </div>
+
+{% if categories %}
+  <div class="row g-3">
+    {% for category in categories %}
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <div class="d-flex align-items-start gap-3">
+              <div class="display-6 text-success">
+                {% if category.icon %}
+                  <i class="{{ category.icon }}"></i>
+                {% else %}
+                  <i class="bi bi-recycle"></i>
+                {% endif %}
+              </div>
+              <div class="flex-grow-1">
+                <h5 class="card-title mb-1">{{ category.get_name_display }}</h5>
+                {% if category.description %}
+                  <p class="text-muted small mb-2">{{ category.description }}</p>
+                {% endif %}
+                {% if category.disposal_instructions %}
+                  <div class="small">
+                    <span class="text-secondary">Instructions:</span>
+                    <div>{{ category.disposal_instructions|linebreaksbr }}</div>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="alert alert-info">No categories available yet.</div>
+{% endif %}
+{% endblock %}
+
