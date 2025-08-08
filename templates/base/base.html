@@ -53,7 +53,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'waste:home' %}">Schedule Pickup</a>
                     </li>
-                    {% if user.is_superuser or user.user_type in 'admin,collector' %}
+                           {% if user.is_superuser or user.user_type in ['admin','collector'] %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'sensors:dashboard' %}">Sensor Dashboard</a>
                     </li>
@@ -77,7 +77,7 @@
                                 <li><a class="dropdown-item" href="{% url 'users:dashboard' %}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
                                 <li><a class="dropdown-item" href="{% url 'waste:my_schedules' %}"><i class="bi bi-calendar-check"></i> My Schedules</a></li>
                                 <li><a class="dropdown-item" href="{% url 'gamification:my_rewards' %}"><i class="bi bi-gift"></i> My Rewards</a></li>
-                                {% if user.is_superuser or user.user_type in 'admin,collector' %}
+                                       {% if user.is_superuser or user.user_type in ['admin','collector'] %}
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="{% url 'sensors:dashboard' %}"><i class="bi bi-cpu"></i> Sensor Dashboard</a></li>
                                 <li><a class="dropdown-item" href="{% url 'sensors:alerts' %}"><i class="bi bi-exclamation-triangle"></i> Alerts</a></li>

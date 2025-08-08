@@ -6,6 +6,7 @@ from django.contrib.auth import logout, login
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.contrib.auth import get_user_model
+from sensors.models import Bin, Alert
 
 User = get_user_model()
 
@@ -101,15 +102,31 @@ class ProfileEditView(LoginRequiredMixin, TemplateView):
 
 class DashboardView(LoginRequiredMixin, TemplateView):
     template_name = 'users/dashboard.html'
+
+    def get_template_names(self):
+        user = self.request.user
+        if user.is_superuser or getattr(user, 'user_type', '') in ['admin', 'collector']:
+            return ['users/dashboard_collector.html']
+        return [self.template_name]
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
         
-        # Get user's pickup schedules
-        context['total_pickups'] = user.pickup_schedules.filter(status='completed').count()
-        context['pending_pickups'] = user.pickup_schedules.filter(status='pending').count()
-        context['recent_pickups'] = user.pickup_schedules.order_by('-created_at')[:5]
+        # Resident context
+        try:
+            context['total_pickups'] = user.pickup_schedules.filter(status='completed').count()
+            context['pending_pickups'] = user.pickup_schedules.filter(status='pending').count()
+            context['recent_pickups'] = user.pickup_schedules.order_by('-created_at')[:5]
+        except Exception:
+            context['total_pickups'] = 0
+            context['pending_pickups'] = 0
+            context['recent_pickups'] = []
+
+        # Collector/admin context
+        context['total_bins'] = Bin.objects.filter(is_active=True).count()
+        context['active_alerts'] = Alert.objects.filter(is_resolved=False).count()
+        context['bins_needing_collection'] = Bin.objects.filter(is_active=True).count()  # placeholder
         
         return context
 

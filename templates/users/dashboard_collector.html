@@ -1,0 +1,51 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Collector Dashboard{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+  <div class="col-12 d-flex align-items-center justify-content-between">
+    <h3 class="mb-0"><i class="bi bi-truck text-success"></i> Collector Dashboard</h3>
+    <a href="{% url 'sensors:dashboard' %}" class="btn btn-success"><i class="bi bi-cpu"></i> Sensor Dashboard</a>
+  </div>
+  </div>
+
+<div class="row">
+  <div class="col-md-4 mb-3">
+    <div class="card">
+      <div class="card-body text-center">
+        <h2 class="text-success mb-0">{{ total_bins }}</h2>
+        <small class="text-muted">Active Bins</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4 mb-3">
+    <div class="card">
+      <div class="card-body text-center">
+        <h2 class="text-danger mb-0">{{ active_alerts }}</h2>
+        <small class="text-muted">Active Alerts</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4 mb-3">
+    <div class="card">
+      <div class="card-body text-center">
+        <h2 class="text-warning mb-0">{{ bins_needing_collection }}</h2>
+        <small class="text-muted">Bins Needing Collection</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card mt-3">
+  <div class="card-body">
+    <h5 class="card-title"><i class="bi bi-exclamation-triangle text-warning"></i> Quick Actions</h5>
+    <div class="d-flex gap-2 flex-wrap">
+      <a href="{% url 'sensors:alerts' %}" class="btn btn-outline-warning"><i class="bi bi-exclamation-circle"></i> View Alerts</a>
+      <a href="{% url 'sensors:maintenance' %}" class="btn btn-outline-secondary"><i class="bi bi-tools"></i> Maintenance</a>
+      <a href="{% url 'sensors:dashboard' %}" class="btn btn-outline-primary"><i class="bi bi-speedometer2"></i> Sensor Overview</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
