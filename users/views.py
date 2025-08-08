@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView, View
-from django.contrib.auth.views import LoginView as BaseLoginView
+from django.contrib.auth.views import LoginView as BaseLoginView, PasswordChangeView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import logout, login
 from django.contrib import messages
@@ -112,3 +112,26 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         context['recent_pickups'] = user.pickup_schedules.order_by('-created_at')[:5]
         
         return context
+
+
+class ChangePasswordView(LoginRequiredMixin, PasswordChangeView):
+    template_name = 'users/change_password.html'
+    success_url = reverse_lazy('users:profile')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Your password has been updated successfully.')
+        return super().form_valid(form)
+
+
+class DeleteAccountView(LoginRequiredMixin, View):
+    template_name = 'users/confirm_delete.html'
+
+    def get(self, request):
+        return render(request, self.template_name)
+
+    def post(self, request):
+        user = request.user
+        logout(request)
+        user.delete()
+        messages.success(request, 'Your account has been deleted. We’re sorry to see you go!')
+        return redirect('home')

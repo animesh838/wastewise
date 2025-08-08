@@ -232,16 +232,19 @@
                     </div>
                 </div>
                 
-                <div class="mt-3">
-                    <button class="btn btn-outline-primary me-2">
+                <div class="mt-3 d-flex align-items-center gap-2 flex-wrap">
+                    <a href="{% url 'users:password_change' %}" class="btn btn-outline-primary">
                         <i class="bi bi-key"></i> Change Password
-                    </button>
-                    <button class="btn btn-outline-secondary me-2">
+                    </a>
+                    <a href="#" class="btn btn-outline-secondary disabled" aria-disabled="true">
                         <i class="bi bi-bell"></i> Notification Settings
-                    </button>
-                    <button class="btn btn-outline-danger">
-                        <i class="bi bi-trash"></i> Delete Account
-                    </button>
+                    </a>
+                    <form action="{% url 'users:delete_account' %}" method="post" onsubmit="return confirm('This will permanently delete your account. Continue?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger">
+                            <i class="bi bi-trash"></i> Delete Account
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
