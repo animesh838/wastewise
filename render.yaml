@@ -1,0 +1,25 @@
+# Render Blueprint: https://dashboard.render.com/select-repo?type=blueprint
+#
+# Before deploying, create a free PostgreSQL database at https://neon.tech
+# and set DATABASE_URL in the Render dashboard (Web Service -> Environment).
+
+services:
+  - type: web
+    name: wastewise
+    runtime: python
+    plan: free
+    region: oregon
+    buildCommand: ./build.sh
+    preDeployCommand: python manage.py migrate && python setup_demo.py
+    startCommand: gunicorn waste_management.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: .onrender.com
+      - key: DATABASE_URL
+        sync: false

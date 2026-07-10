@@ -29,7 +29,27 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-%-1e@+$86+s#i&k$l#@1#
 DEBUG = config('DEBUG', default=True, cast=bool)
 
 # Production and development hosts
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,wastewise.com,*.wastewise.com,*.railway.app').split(',')
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in config(
+        'ALLOWED_HOSTS',
+        default='localhost,127.0.0.1,wastewise.com,www.wastewise.com,.onrender.com,.railway.app',
+    ).split(',')
+    if host.strip()
+]
+
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME and RENDER_EXTERNAL_HOSTNAME not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in config('CSRF_TRUSTED_ORIGINS', default='').split(',')
+    if origin.strip()
+]
+RENDER_EXTERNAL_URL = os.environ.get('RENDER_EXTERNAL_URL')
+if RENDER_EXTERNAL_URL:
+    CSRF_TRUSTED_ORIGINS.append(RENDER_EXTERNAL_URL.rstrip('/'))
 
 
 # Application definition
@@ -231,6 +251,8 @@ if not DEBUG:
         "https://www.wastewise.com",
         "https://wastewise-app-production.up.railway.app",
     ]
+    if RENDER_EXTERNAL_URL:
+        CORS_ALLOWED_ORIGINS.append(RENDER_EXTERNAL_URL.rstrip('/'))
     
     # Static files configuration for production
     STATICFILES_STORAGE = 'whitenoise.storage.StaticFilesStorage'
